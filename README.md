@@ -1,36 +1,220 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💎 GeoScout: UI-Constrained Agentic Field Assistant
 
-## Getting Started
+## Deloitte GenAI Assessment — Option 1 Submission
 
-First, run the development server:
+---
+
+### 🌍 Executive Summary
+
+**GeoScout** is a UI-Constrained Decision Support System designed to assist geologists in identifying minerals in the field.
+
+Instead of following the traditional free-text chatbot paradigm, GeoScout enforces a strict, state-driven workflow:
+**Visual Observation $\to$ Physical Tests $\to$ Conclusion**
+
+This approach prioritizes **safety**, **determinism**, **auditability**, and **field usability**, making the system suitable for real-world deployment rather than just conversational demos.
+
+---
+
+## ⭐ Key Differentiators
+
+**Why this submission stands out*
+
+### 1. 🧠 Dual-Brain Architecture (Online + Offline)
+
+GeoScout does not rely solely on an LLM.
+
+* **Primary Brain:** LLM-powered reasoning via Groq API.
+* **Fallback Brain:** A Deterministic Rule Engine (`offlineInference.ts`).
+
+> **Resilience:** If connectivity is lost or no API key is provided, the system **automatically degrades** to offline logic — ensuring continued functionality in zero-connectivity environments.
+
+### 2. 🛡️ Defensive Governance ("Defense in Depth")
+
+Safety and reliability constraints are enforced at multiple layers:
+
+* **Server-Side (System Prompt):**
+  * Enforced JSON schema.
+  * Loop-prevention rules.
+  * Deterministic UI transitions.
+* **Client-Side:**
+  * 120-character display limit.
+  * Truncation safeguards.
+  * Invalid state prevention.
+
+### 3. 🔄 Resilient State Management
+
+Users can correct prior observations (e.g., removing "Pink" from Color) without restarting the session. This demonstrates **non-linear state control** and robust memory handling, far exceeding simple linear chat flows.
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+* Node.js 18+
+
+### Installation
+
+1. **Install Dependencies:**
+
+    ```bash
+    npm install
+    ```
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install groq-sdk lucide-react clsx tailwindcss-animate
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. **Configure Environment (Optional):**
+    Rename `.env.example` file in the root directory to `.env.local`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+    ```env
+    GROQ_API_KEY=gsk_...
+    ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Get a free key at: `https://console.groq.com/keys`
+GROQ_API_KEY=gsk_replace_this_with_your_key_here
+    > **Note:** If no API key is provided — or if the network fails — GeoScout automatically switches to **Offline Mode**.
 
-## Learn More
+2. **Run Locally:**
 
-To learn more about Next.js, take a look at the following resources:
+    ```bash
+    npm run dev
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    Open your browser to: `http://localhost:3000`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🏗️ System Architecture
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+*(Requirement: UI vs Agent vs Memory State Model)*
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+GeoScout separates concerns into three explicit state layers to ensure stability and auditability.
+
+| Layer | Responsibility | Implementation Details |
+| :--- | :--- | :--- |
+| **1. Memory State** | **Source of Truth.** Tracks accumulated evidence. | `ObservationState` in `page.tsx`. Tracks `{ value, source }`, enabling precise undo operations. |
+| **2. Agent State** | **The Brain.** Determines next valid UI transition. | Stateless API (`route.ts`). Receives full Memory snapshot and returns a strictly typed JSON directive. |
+| **3. UI State** | **The View.** Renders only permitted interactions. | React components (`ActionPanel`, `AgentStatus`). The UI is reactive and non-authoritative. |
+
+---
+
+## ⚠️ Failure Scenario & Recovery
+
+*(Requirement: Failure handling demonstration)*
+
+**Scenario:** Loss of Connectivity Mid-Identification.
+
+1. **Context:** A user has already identified `Color: Pink` and `Luster: Glassy`.
+2. **Failure:** The user selects "Transparency: Transparent", but the API request fails (Timeout / 500 error).
+3. **Recovery Flow:**
+    * `updateAgent` catches the network error.
+    * `isOffline` flag is set to `true`.
+    * **Offline Banner** is rendered.
+    * Current Memory State is passed to `offlineInference.ts`.
+    * Local rule engine identifies the mineral (e.g., Quartz).
+    * UI proceeds without interruption.
+
+**Result:** The system gracefully degrades from **AI Assistant** $\to$ **Expert Rule System**. No crashes. No data loss.
+
+---
+
+## 🚫 Why Not a Plain Text Chatbot?
+
+*(Requirement: Analysis of Chat vs UI Constraints)*
+
+A standard chatbot interface would fail critical safety and usability requirements:
+
+### ❌ Ambiguity & Hallucination
+
+* *Chat:* Free text like "It looks shiny" forces guesswork.
+* *GeoScout:* UI forces explicit geological terms (`Glassy`, `Metallic`, `Dull`).
+
+### ❌ Safety Violations
+
+* *Chat:* Users can ask unsafe questions ("Can I taste it?", "What if I smash it?").
+* *GeoScout:* Physically prevents unsafe actions by **never rendering** those options.
+
+### ❌ Poor Field Usability
+
+* *Chat:* Typing on a touchscreen in sunlight with dirty hands is impractical.
+* *GeoScout:* Uses large, high-contrast tap targets suitable for field conditions.
+
+### ❌ State Corruption
+
+* *Chat:* Users can provide contradictions ("It's red... actually blue").
+* *GeoScout:* Enforces single-value keys (Color is Red **OR** Blue — never both).
+
+---
+
+## 📊 Interaction Diagrams
+
+### 1. Dual-Brain Control Loop
+
+*How the system switches between Online and Offline brains.*
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI as Next.js Client
+    participant Controller as State Controller
+    participant LLM as API Route (Online)
+    participant Local as Rule Engine (Offline)
+
+    User->>UI: Selects "Color: Pink"
+    UI->>Controller: Update Observation State
+    
+    alt Network Available
+        Controller->>LLM: POST /api/identify
+        LLM-->>Controller: AgentResponse
+    else Network Failure
+        Controller->>Controller: Enable Offline Mode
+        Controller->>Local: inferMineral(state)
+        Local-->>Controller: Deterministic Response
+    end
+
+    Controller-->>UI: Render Next Panel
+    
+    
+    
+    
+    
+2. State Machine Transition
+stateDiagram-v2
+    [*] --> Start
+    Start --> Observation
+
+    state "Data Collection Loop" as Loop {
+        Observation --> PhysicalTest
+        PhysicalTest --> ChemicalTest
+        ChemicalTest --> Observation
+    }
+
+    Loop --> Conclusion
+    Conclusion --> Start
+
+    note right of Loop
+        User can delete
+        observations at
+        any time.
+    end note
+
+
+
+📸 Screenshots
+🖥️ Main Interface
+![!\[alt text\](<Screenshot 2026-01-10 004150.png>) !\[alt text\](<offline_mode.png>)](/Screenshots/online_flow.png)
+Clean, centered UI with confidence meter and field notes.
+
+⚠️ Offline Mode
+![!\[alt text\](<Screenshot 2026-01-10 004150.png>) !\[alt text\](<offline_mode.png>)](/Screenshots/offline_mode.png)
+Graceful degradation banner with uninterrupted workflow.
+
+
+🛠️ Key Engineering Decisions
+Next.js API Routes: Chosen over Server Actions for explicit HTTP status control and compatibility with the Groq SDK.
+
+Strict JSON Mode: The System Prompt enforces response_format: { type: "json_object" } to guarantee that the UI never breaks due to malformed LLM text.
+
+Universal Escape Hatches: Every question generated by the Agent (Online or Offline) includes a "Negative" option (e.g., "No Cleavage", "Unsure"), preventing the "Constraint Trap" where a user cannot answer truthfully.
