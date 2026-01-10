@@ -54,7 +54,7 @@ Users can correct prior observations (e.g., removing "Pink" from Color) without 
 
 * Node.js 18+
 
-### Step 1: Install Dependencies
+### Step 1. : Install Dependencies
 
 Run this command to install the core framework and UI libraries:
 
@@ -63,7 +63,7 @@ npm install
 
 ```
 
-### Step 2: Configure Environment
+### Step 2. : Configure Environment
 
 The app requires an API key for the "Online Mode" to work.
 
