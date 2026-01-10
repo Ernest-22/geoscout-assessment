@@ -87,7 +87,7 @@ Open your browser to:```http://localhost:3000```
 
 ## 🏗️ System Architecture
 
-**(Requirement: UI vs Agent vs Memory State Model)*
+**(Requirement: UI2 vs Agent vs Memory State Model)*
 
 GeoScout separates concerns into three explicit state layers to ensure stability and auditability.
 
