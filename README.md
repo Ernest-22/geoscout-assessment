@@ -4,7 +4,7 @@
 
 ---
 
-### 🌍 Executive Summary
+## 🌍 Executive Summary
 
 **GeoScout** is a UI-Constrained Decision Support System designed to assist geologists in identifying minerals in the field.
 
@@ -33,13 +33,14 @@ GeoScout does not rely solely on an LLM.
 Safety and reliability constraints are enforced at multiple layers:
 
 * **Server-Side (System Prompt):**
-  * Enforced JSON schema.
-  * Loop-prevention rules.
-  * Deterministic UI transitions.
+  * Enforced JSON schema
+  * Loop-prevention rules
+  * Deterministic UI transitions
+
 * **Client-Side:**
   * 120-character display limit.
-  * Truncation safeguards.
-  * Invalid state prevention.
+    * Truncation safeguards.
+    * Invalid state prevention.
 
 ### 3. 🔄 Resilient State Management
 
@@ -53,100 +54,93 @@ Users can correct prior observations (e.g., removing "Pink" from Color) without 
 
 * Node.js 18+
 
-### Installation
+### Step 1: Install Dependencies
 
-1. **Install Dependencies:**
-
-    ```bash
-    npm install
-    ```
+Run this command to install the core framework and UI libraries:
 
 ```bash
-npm install groq-sdk lucide-react clsx tailwindcss-animate
+npm install
+
 ```
 
-1. **Configure Environment (Optional):**
-    Rename `.env.example` file in the root directory to `.env.local`:
+### Step 2: Configure Environment
 
-    ```env
-    GROQ_API_KEY=gsk_...
-    ```
+The app requires an API key for the "Online Mode" to work.
 
-Get a free key at: `https://console.groq.com/keys`
-GROQ_API_KEY=gsk_replace_this_with_your_key_here
-    > **Note:** If no API key is provided — or if the network fails — GeoScout automatically switches to **Offline Mode**.
+1. Find the file named .env.example in the root folder.
 
-2. **Run Locally:**
+2. Rename it to .env.local.
 
-    ```bash
-    npm run dev
-    ```
+3. Open the file and paste your Groq API Key.
 
-    Open your browser to: `http://localhost:3000`
+   * Don't have a key? Get a free one instantly here: ```<https://console.groq.com/keys>```
 
----
+Note: If you skip this step, the app will simply launch in Offline Mode (which is a supported feature).
+
+## Step 3: Run the App
+
+```bash
+npm run dev
+```
+
+Open your browser to:```http://localhost:3000```
 
 ## 🏗️ System Architecture
 
-*(Requirement: UI vs Agent vs Memory State Model)*
+**(Requirement: UI vs Agent vs Memory State Model)*
 
 GeoScout separates concerns into three explicit state layers to ensure stability and auditability.
 
 | Layer | Responsibility | Implementation Details |
-| :--- | :--- | :--- |
-| **1. Memory State** | **Source of Truth.** Tracks accumulated evidence. | `ObservationState` in `page.tsx`. Tracks `{ value, source }`, enabling precise undo operations. |
-| **2. Agent State** | **The Brain.** Determines next valid UI transition. | Stateless API (`route.ts`). Receives full Memory snapshot and returns a strictly typed JSON directive. |
-| **3. UI State** | **The View.** Renders only permitted interactions. | React components (`ActionPanel`, `AgentStatus`). The UI is reactive and non-authoritative. |
-
----
+|------|---------------|------------------------|
+| **Memory State** | Source of truth for accumulated evidence. | `ObservationState` in `page.tsx`. Stores `{ value, source }`, enabling precise undo and correction operations. |
+| **Agent State** | Decision engine governing valid UI transitions. | Stateless API (`route.ts`). Receives the full memory snapshot and returns a strictly typed JSON directive. |
+| **UI State** | Presentation layer. Renders only permitted interactions. | React components (`ActionPanel`, `AgentStatus`). UI is reactive and non-authoritative. |
 
 ## ⚠️ Failure Scenario & Recovery
 
-*(Requirement: Failure handling demonstration)*
+**(Requirement: Failure handling demonstration)*
 
-**Scenario:** Loss of Connectivity Mid-Identification.
+* **Scenario: Loss of Connectivity Mid-Identification.**
 
-1. **Context:** A user has already identified `Color: Pink` and `Luster: Glassy`.
-2. **Failure:** The user selects "Transparency: Transparent", but the API request fails (Timeout / 500 error).
-3. **Recovery Flow:**
-    * `updateAgent` catches the network error.
-    * `isOffline` flag is set to `true`.
-    * **Offline Banner** is rendered.
-    * Current Memory State is passed to `offlineInference.ts`.
-    * Local rule engine identifies the mineral (e.g., Quartz).
-    * UI proceeds without interruption.
+1. Context: A user has already identified Color: Pink and Luster: Glassy.
+2. Failure: The user selects "Transparency: Transparent", but the API request fails (Timeout / 500 error).
+3. Recovery Flow:
 
-**Result:** The system gracefully degrades from **AI Assistant** $\to$ **Expert Rule System**. No crashes. No data loss.
+* ```updateAgent``` catches the network error.
+* ```isOffline``` flag is set to ```true```.
+* Offline Banner is rendered.
+* Current Memory State is passed to ```offlineInference.ts```.
+* Local rule engine identifies the mineral (e.g., Quartz).
+* UI proceeds without interruption.
 
----
+* **Result**: The system gracefully degrades from AI Assistant $\to$ Expert Rule System. No crashes. No data loss.
 
-## 🚫 Why Not a Plain Text Chatbot?
+### 🚫 Why Not a Plain Text Chatbot?
 
-*(Requirement: Analysis of Chat vs UI Constraints)*
+**(Requirement: Analysis of Chat vs UI Constraints)*
 
 A standard chatbot interface would fail critical safety and usability requirements:
 
-### ❌ Ambiguity & Hallucination
+* **❌ Ambiguity & Hallucination**
+  * Chat: Free text like "It looks shiny" forces guesswork.
 
-* *Chat:* Free text like "It looks shiny" forces guesswork.
-* *GeoScout:* UI forces explicit geological terms (`Glassy`, `Metallic`, `Dull`).
+    * GeoScout: UI forces explicit geological terms (Glassy, Metallic, Dull).
 
-### ❌ Safety Violations
+* **❌ Safety Violations**
+  * Chat: Users can ask unsafe questions ("Can I taste it?", "What if I smash it?").
 
-* *Chat:* Users can ask unsafe questions ("Can I taste it?", "What if I smash it?").
-* *GeoScout:* Physically prevents unsafe actions by **never rendering** those options.
+  * GeoScout: Physically prevents unsafe actions by never rendering those options.
 
-### ❌ Poor Field Usability
+* **❌ Poor Field Usability**
+  * Chat: Typing on a touchscreen in sunlight with dirty hands is impractical.
 
-* *Chat:* Typing on a touchscreen in sunlight with dirty hands is impractical.
-* *GeoScout:* Uses large, high-contrast tap targets suitable for field conditions.
+    * GeoScout: Uses large, high-contrast tap targets suitable for field conditions.
 
-### ❌ State Corruption
+* **❌ State Corruption**
+  * Chat: Users can provide contradictions ("It's red... actually blue").
 
-* *Chat:* Users can provide contradictions ("It's red... actually blue").
-* *GeoScout:* Enforces single-value keys (Color is Red **OR** Blue — never both).
-
----
+    * GeoScout: Enforces single-value keys (Color is Red OR Blue — never both).
 
 ## 📊 Interaction Diagrams
 
@@ -176,11 +170,13 @@ sequenceDiagram
 
     Controller-->>UI: Render Next Panel
     
-    
-    
-    
-    
-2. State Machine Transition
+```
+
+## 2. State Machine Transition
+
+**How the Agent governs the workflow.*
+
+```mermaid
 stateDiagram-v2
     [*] --> Start
     Start --> Observation
@@ -200,21 +196,24 @@ stateDiagram-v2
         any time.
     end note
 
+```
 
+## 📸 Screenshots
 
-📸 Screenshots
-🖥️ Main Interface
-![!\[alt text\](<Screenshot 2026-01-10 004150.png>) !\[alt text\](<offline_mode.png>)](/Screenshots/online_flow.png)
-Clean, centered UI with confidence meter and field notes.
+### 1. Main Interface
 
-⚠️ Offline Mode
-![!\[alt text\](<Screenshot 2026-01-10 004150.png>) !\[alt text\](<offline_mode.png>)](/Screenshots/offline_mode.png)
-Graceful degradation banner with uninterrupted workflow.
+Clean, centered UI with confidence meter and field notes.  
+![Main Interface](./screenshots/online_flow.png)
 
+### 2. Offline Mode
 
-🛠️ Key Engineering Decisions
-Next.js API Routes: Chosen over Server Actions for explicit HTTP status control and compatibility with the Groq SDK.
+Graceful degradation banner with uninterrupted workflow.  
+![Offline Mode](./screenshots/offline_mode.png)
 
-Strict JSON Mode: The System Prompt enforces response_format: { type: "json_object" } to guarantee that the UI never breaks due to malformed LLM text.
+## 🛠️ Key Engineering Decisions
 
-Universal Escape Hatches: Every question generated by the Agent (Online or Offline) includes a "Negative" option (e.g., "No Cleavage", "Unsure"), preventing the "Constraint Trap" where a user cannot answer truthfully.
+* **Next.js API Routes**: Chosen over Server Actions for explicit HTTP status control and compatibility with the Groq SDK.
+
+* **Strict JSON Mode**: The System Prompt enforces ```response_format: { type: "json_object" }``` to guarantee that the UI never breaks due to malformed LLM text.
+
+* **Universal Escape Hatches**: Every question generated by the Agent (Online or Offline) includes a "Negative" option (e.g., "No Cleavage", "Unsure"), preventing the "Constraint Trap" where a user cannot answer truthfully.
