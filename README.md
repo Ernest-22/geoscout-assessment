@@ -50,11 +50,20 @@ Users can correct prior observations (e.g., removing "Pink" from Color) without 
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### ✅ Prerequisites
 
-* Node.js 18+
+Before starting, ensure you have:
 
-### Step 1. : Install Dependencies
+* **Node.js 18+**
+  * Verify installation:
+
+    ```bash
+    node -v
+    ```
+
+---
+
+### 📦 Step 1: Install Dependencies
 
 Run this command to install the core framework and UI libraries:
 
@@ -63,7 +72,22 @@ npm install
 
 ```
 
-### Step 2. : Configure Environment
+### 📦 Dependencies
+
+The following specific libraries are required for the project to run (beyond the standard Next.js setup):
+
+* **`groq-sdk`**: The AI client used to communicate with the Groq API for mineral inference.
+* **`lucide-react`**: Icon library used for the Gem logo and UI elements.
+* **`clsx`**: Utility for handling conditional CSS class names (e.g., switching between Offline/Online styles).
+* **`tailwindcss-animate`**: Tailwind plugin used for the smooth fade-in and slide-up animations.
+
+To install all of them at once:
+
+```bash
+npm install groq-sdk lucide-react clsx tailwindcss-animate
+```
+
+### Step 2: Configure Environment
 
 The app requires an API key for the "Online Mode" to work.
 
