@@ -209,6 +209,7 @@ After Running `npm run dev`, you should see:
 * No reliance on LLM responses
 
 </details>
+</details>
 
 ## 🏗️ System Architecture
 
