@@ -124,23 +124,94 @@ After Running `npm run dev`, you should see:
 
 <details>
 
-<summary><strong>Test Case 1: Identifying Quartz (The Happy Path)</strong></summary>
+<## 🧪 QA Testing Guide (Geology Verification Cheatsheet)
+*The following test cases validate system behaviour under both predictable and adaptive agent flows (Online LLM and Offline Rule Engine). The exact question order may vary in Online Mode, but outcomes, constraints, and conclusions must remain consistent.*
 
-1. **Action:** Select `Observe Color` $\to$ `Uniform`.
-2. **Action:** Select `Luster` $\to$ `Glassy`.
-3. **Action:** Select `Transparency` $\to$ `Transparent`.
-4. **Expected Result:** System identifies **Quartz** with high confidence.
+<details>
+<summary><strong>Test Case 1: Quartz Identification (Adaptive Happy Path)</strong></summary>
+
+**Goal:** Verify correct Quartz identification under adaptive questioning.
+
+1. **Action:** Select `Color` → `Uniform`
+2. **Action:** Select `Luster` → `Glassy`
+3. **Action:** Select `Transparency` → `Transparent`
+4. **Action:** If prompted, select `Cleavage` → `None`
+5. **Action:** If prompted, select `Fracture` → `Conchoidal`
+
+**Expected Result:**
+
+* Mineral identified as **Quartz**
+* Confidence indicator: **High**
+* Conclusion reached without unsafe or ambiguous prompts
+* Output rendered via predefined UI components
+* Response length ≤ 120 characters
+* Behaviour consistent in Online and Offline modes
 
 </details>
 
 <details>
-<summary><strong>Test Case 2: The "Fool's Gold" Check (Correction Flow)</strong></summary>
+<summary><strong>Test Case 2: Pyrite Identification (Adaptive Path with Key Disambiguation)</strong></summary>
 
-1. **Action:** Select `Color` $\to$ `Brass Yellow`.
-2. **Action:** The Agent will likely ask about "Streak" (powder color).
-3. **Action:** Select `Streak` $\to$ `Black/Greenish`.
-4. **Expected Result:** System identifies **Pyrite** (Fool's Gold).
-    * *Note: Real Gold has a yellow streak. You can go back, change the streak to "Yellow", and watch the conclusion change.*
+**Goal:** Ensure Pyrite is correctly identified and not misclassified as Gold.
+
+1. **Action:** Select `Color` → `Uniform`
+2. **Action:** Select `Luster` → `Metallic`
+3. **Action:** Select `Color Hue` → `Gold / Yellow`
+4. **Action:** If prompted, select `Crystal Shape` → `Cubic`
+5. **Action:** Select `Streak` → `Black / Greenish`
+6. **Action:** If prompted, select `Hardness` → `=>5`
+
+**Expected Result:**
+
+* Mineral identified as **Pyrite**
+* System avoids "Gold" misclassification
+* Confidence indicator: **Medium–High**
+* No invalid UI transitions
+* Deterministic behaviour in Offline Mode
+
+</details>
+
+<details>
+<summary><strong>Test Case 3: Feldspar Identification (Cleavage-Based Disambiguation)</strong></summary>
+
+**Goal:** Validate Feldspar identification using cleavage logic.
+
+1. **Action:** Select `Color` → `Pink / White`
+2. **Action:** Select `Luster` → `Glassy to Dull`
+3. **Action:** Select `Transparency` → `Opaque`
+4. **Action:** Select `Cleavage` → `Two Directions`
+5. **Action:** If prompted, select `Cleavage Angle` → `Approximately 90°`
+
+**Expected Result:**
+
+* Mineral identified as **Feldspar**
+* Quartz correctly ruled out
+* Confidence indicator: **Medium**
+* No requirement for free-text input
+* Same conclusion Online and Offline
+
+</details>
+
+<details>
+<summary><strong>Test Case 4: Offline Mode with Adaptive Question Ordering</strong></summary>
+
+**Goal:** Ensure full identification flow without network connectivity.
+
+1. *Setup:* Disable internet or remove `GROQ_API_KEY`
+2. *Setup:* Start a new identification session
+3. **Action:** Select `Luster` → `Glassy`
+4. **Action:** Select `Transparency` → `Translucent`
+5. **Action:** If prompted, select `Fracture` → `Conchoidal`
+6. **Action:** If prompted, select `Cleavage` → `None`
+7. **Action:** Proceed to conclusion
+
+**Expected Result:**
+
+* **Offline Mode banner** is visible
+* Deterministic rule engine is used
+* Mineral identified as **Quartz**
+* No blocked UI paths or dead ends
+* No reliance on LLM responses
 
 </details>
 
