@@ -120,11 +120,6 @@ After Running `npm run dev`, you should see:
 
 ## 🧪 QA Testing Guide (Geology Cheat Sheet)
 
-*Use these known mineral signatures to verify the system's logic (Online or Offline).*
-
-<details>
-
-<## 🧪 QA Testing Guide (Geology Verification Cheatsheet)
 *The following test cases validate system behaviour under both predictable and adaptive agent flows (Online LLM and Offline Rule Engine). The exact question order may vary in Online Mode, but outcomes, constraints, and conclusions must remain consistent.*
 
 <details>
