@@ -118,6 +118,32 @@ After Running `npm run dev`, you should see:
 * Terminsl: `✓ Ready on http://localhost:3000:`
 * Browser: GeoScout logo with "Identify Mineral" header "Online Mode Active" or "Offline Mode Active"
 
+## 🧪 QA Testing Guide (Geology Cheat Sheet)
+
+*Use these known mineral signatures to verify the system's logic (Online or Offline).*
+
+<details>
+
+<summary><strong>Test Case 1: Identifying Quartz (The Happy Path)</strong></summary>
+
+1.  **Action:** Select `Luster` $\to$ `Glassy`.
+2.  **Action:** Select `Cleavage` $\to$ `No Cleavage`.
+3.  **Action:** Select `Hardness` $\to$ `Hard (>5.5)`.
+4. **Expected Result:** System identifies **Quartz** with high confidence.
+
+</details>
+
+<details>
+<summary><strong>Test Case 2: The "Fool's Gold" Check (Correction Flow)</strong></summary>
+
+1. **Action:** Select `Color` $\to$ `Brass Yellow`.
+2. **Action:** The Agent will likely ask about "Streak" (powder color).
+3. **Action:** Select `Streak` $\to$ `Black/Greenish`.
+4. **Expected Result:** System identifies **Pyrite** (Fool's Gold).
+    * *Note: Real Gold has a yellow streak. You can go back, change the streak to "Yellow", and watch the conclusion change.*
+
+</details>
+
 ## 🏗️ System Architecture
 
 **(Requirement: UI vs Agent vs Memory State Model)*
