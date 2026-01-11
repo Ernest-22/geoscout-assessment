@@ -209,33 +209,33 @@ sequenceDiagram
     
 ```
 
-## 2. State Machine Transition
+### 2. State Machine Transition
 
-**How the Agent governs the workflow.*
+*How the Agent governs the workflow and handles user corrections.*
 
 ```mermaid
 stateDiagram-v2
     [*] --> Start
-
     Start --> Observation : Begin session
 
-    state "Evidence Collection (User-Guided)" as Loop {
+    state "Evidence Collection Loop" as Loop {
         Observation --> PhysicalTest : Agent requests test
         PhysicalTest --> ChemicalTest : Agent requests test
         ChemicalTest --> Observation : Evidence insufficient
+        
+        %% Self-correction loops
+        Observation --> Observation : User edits inputs
+        PhysicalTest --> PhysicalTest : User edits inputs
+        ChemicalTest --> ChemicalTest : User edits inputs
     }
 
-    Loop --> Conclusion : Evidence confidence ≥ threshold
-    Conclusion --> Start : New identification
-
-    Observation --> Observation : User edits / deletes evidence
-    PhysicalTest --> PhysicalTest : User edits / deletes evidence
-    ChemicalTest --> ChemicalTest : User edits / deletes evidence
+    Loop --> Conclusion : Confidence ≥ Threshold
+    Conclusion --> Start : New Identification
 
     note right of Loop
-        Agent validates state.
-        User may correct
-        observations at any time.
+        Agent continuously validates state.
+        User can interrupt loop to
+        correct evidence at any time.
     end note
 
 
