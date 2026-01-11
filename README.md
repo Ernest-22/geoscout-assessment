@@ -126,9 +126,9 @@ After Running `npm run dev`, you should see:
 
 <summary><strong>Test Case 1: Identifying Quartz (The Happy Path)</strong></summary>
 
-1.  **Action:** Select `Luster` $\to$ `Glassy`.
-2.  **Action:** Select `Cleavage` $\to$ `No Cleavage`.
-3.  **Action:** Select `Hardness` $\to$ `Hard (>5.5)`.
+1. **Action:** Select `Observe Color` $\to$ `Uniform`.
+2. **Action:** Select `Luster` $\to$ `Glassy`.
+3. **Action:** Select `Transparency` $\to$ `Transparent`.
 4. **Expected Result:** System identifies **Quartz** with high confidence.
 
 </details>
