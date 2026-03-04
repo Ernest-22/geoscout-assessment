@@ -1,6 +1,6 @@
 # 💎 GeoScout: UI-Constrained Agentic Field Assistant
 
-## Deloitte GenAI Assessment — Option 1 Submission
+## Deloitte GenAI Technical Challenge
 
 ---
 
@@ -11,7 +11,7 @@
 Instead of following the traditional free-text chatbot paradigm, GeoScout enforces a strict, state-driven workflow:
 **Visual Observation $\to$ Physical Tests $\to$ Conclusion**
 
-This approach prioritizes **safety**, **determinism**, **auditability**, and **field usability**, making the system suitable for real-world deployment rather than just conversational demos.
+This approach prioritises **safety**, **determinism**, **auditability**, and **field usability**, making the system suitable for real-world deployment rather than just conversational demos.
 
 ---
 
@@ -28,7 +28,7 @@ GeoScout does not rely solely on an LLM.
 
 > **Resilience:** If connectivity is lost or no API key is provided, the system **automatically degrades** to offline logic — ensuring continued functionality in zero-connectivity environments.
 
-### 2. 🛡️ Defensive Governance ("Defense in Depth")
+### 2. 🛡️ Defensive Governance ("Defence in Depth")
 
 Safety and reliability constraints are enforced at multiple layers:
 
